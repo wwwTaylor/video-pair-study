@@ -15,6 +15,7 @@
     trials: [],
     index: 0,
     remainingNew: 0,
+    offset: 0,
     trialStart: 0,
     watch: { l: 0, r: 0 },
     gen: 0,
@@ -206,18 +207,23 @@
   function newBatch() {
     var done = doneMap();
     var ids = S.pairs.map(function (p) { return p.id; });
-    var order = shuffled(ids, seeded(hashStr(state.annotator + '|order|' + S.study_id)));
+    var fixed = S.item_order === 'fixed';   // fixed: always the order listed in study.json
+    var order = fixed ? ids : shuffled(ids, seeded(hashStr(state.annotator + '|order|' + S.study_id)));
     var fresh = order.filter(function (id) { return !done[id]; });
-    var chosen, round;
+    var candidates, round;
     if (fresh.length) {
-      chosen = fresh.slice(0, S.batch_size);
+      candidates = fresh;
       round = 0;
     } else {
       var least = Math.min.apply(null, ids.map(function (id) { return done[id] || 0; }));
       round = least;
-      chosen = shuffled(ids.filter(function (id) { return (done[id] || 0) === least; }),
-        seeded(hashStr(state.annotator + '|repeat|' + least + '|' + S.study_id))).slice(0, S.batch_size);
+      candidates = ids.filter(function (id) { return (done[id] || 0) === least; });
+      if (!fixed) {
+        candidates = shuffled(candidates, seeded(hashStr(state.annotator + '|repeat|' + least + '|' + S.study_id)));
+      }
     }
+    var chosen = candidates.slice(0, S.batch_size);
+    state.offset = fixed ? ids.length - candidates.length : 0;   // items of this round answered earlier
     state.sessionId = randomId();
     var rnd = seeded(hashStr(state.sessionId));
     var trials = chosen.map(function (id) {
@@ -225,15 +231,20 @@
       var flip = S.fixed_order ? false : rnd() < 0.5;   // fixed_order: keep the built A/B order
       return { item: id, kind: 'pair', story: p.story, left: flip ? p.b : p.a, right: flip ? p.a : p.b, round: round };
     });
+    var checks = [];
     for (var c = 0; c < S.catch_per_batch && S.catches.length && trials.length; c++) {
       var k = S.catches[Math.floor(rnd() * S.catches.length)];
       var f = rnd() < 0.5;
-      trials.push({ item: k.id, kind: 'catch', story: k.story, left: f ? k.b : k.a, right: f ? k.a : k.b, round: round });
+      checks.push({ item: k.id, kind: 'catch', story: k.story, left: f ? k.b : k.a, right: f ? k.a : k.b, round: round });
     }
-    trials = shuffled(trials, rnd);
-    if (trials.length > 1 && trials[0].kind === 'catch') {
-      for (var j = 1; j < trials.length; j++) {
-        if (trials[j].kind !== 'catch') { var t = trials[0]; trials[0] = trials[j]; trials[j] = t; break; }
+    if (fixed) {             // keep the pair order; a check goes to a random place after the first item
+      checks.forEach(function (check) { trials.splice(1 + Math.floor(rnd() * trials.length), 0, check); });
+    } else {
+      trials = shuffled(trials.concat(checks), rnd);
+      if (trials.length > 1 && trials[0].kind === 'catch') {
+        for (var j = 1; j < trials.length; j++) {
+          if (trials[j].kind !== 'catch') { var t = trials[0]; trials[0] = trials[j]; trials[j] = t; break; }
+        }
       }
     }
     state.trials = trials;
@@ -248,8 +259,9 @@
   function renderTrial() {
     var trial = state.trials[state.index];
     var n = state.trials.length;
-    $('progressText').textContent = '第 ' + (state.index + 1) + ' / ' + n + ' 题';
-    $('progressBar').style.width = (100 * state.index / n) + '%';
+    var total = state.offset + n;
+    $('progressText').textContent = '第 ' + (state.offset + state.index + 1) + ' / ' + total + ' 题';
+    $('progressBar').style.width = (100 * (state.offset + state.index) / total) + '%';
     var story = S.stories[trial.story] || {};
     $('storyTitle').textContent = txt(story.title);
     $('storyTitle').hidden = !txt(story.title);
@@ -386,6 +398,7 @@
   async function renderDone() {
     $('progressBar').style.width = '100%';
     $('doneText').textContent = '已完成 ' + completedCount() + ' 题。';
+    $('continueBtn').textContent = state.remainingNew > 0 ? '继续' : '再答一次';
     $('doneWarn').hidden = true;
     show('done');
     var ok = await flush();       // waits for the upload already in progress, if any
