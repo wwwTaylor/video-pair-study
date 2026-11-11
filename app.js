@@ -7,7 +7,8 @@
   var $ = function (id) { return document.getElementById(id); };
   var S = null;            // study.json
   var pairById = {};
-  var flushing = false;
+  var memQueue = null;     // answers waiting for upload; the single source of truth (mirrored to localStorage)
+  var flushPromise = null; // the upload loop in progress, shared by every caller
   var state = {
     annotator: '',
     sessionId: '',
@@ -91,12 +92,26 @@
   }
 
   // ------------------------------------------------------------------ upload queue
-  function queue() { return lsJSON(queueKey(), []); }
-  function saveQueue(q) { lsSet(queueKey(), JSON.stringify(q)); updateSyncBanner(); }
+  function queue() {
+    if (memQueue === null) {
+      var stored = lsJSON(queueKey(), []);
+      memQueue = Array.isArray(stored) ? stored : [];
+    }
+    return memQueue;
+  }
+  function persist() {
+    lsSet(queueKey(), JSON.stringify(queue()));  // backup only; works even if storage is blocked
+    updateSyncBanner();
+  }
+  function enqueue(record) {
+    queue().push(record);                         // append only: never overwrite pending answers
+    persist();
+  }
   function updateSyncBanner() {
     var n = queue().length;
-    $('syncBanner').hidden = n === 0 || flushing;
+    $('syncBanner').hidden = n === 0 || flushPromise !== null;
     $('syncText').textContent = '有 ' + n + ' 条答案还没上传，联网后会自动重传。';
+    if (n === 0) $('doneWarn').hidden = true;
   }
 
   async function sendOne(record) {
@@ -119,21 +134,35 @@
     }
   }
 
-  async function flush() {
-    if (flushing) return queue().length === 0;
-    flushing = true;
-    try {
+  // Uploads until the queue is empty or a request fails. A second caller joins the loop
+  // already running instead of starting another one, and answers added meanwhile are
+  // picked up by the same loop, so the result always reflects every pending answer.
+  async function uploadAll() {
+    while (queue().length) {
+      var record = queue()[0];
+      if (!(await sendOne(record))) break;
       var q = queue();
-      while (q.length) {
-        if (!(await sendOne(q[0]))) break;
-        q.shift();
-        saveQueue(q);
-      }
-    } finally {
-      flushing = false;
-      updateSyncBanner();
+      var at = q.indexOf(record);
+      if (at >= 0) q.splice(at, 1);
+      persist();
     }
     return queue().length === 0;
+  }
+
+  function flush() {
+    if (flushPromise) return flushPromise;
+    // .then callbacks always run asynchronously, i.e. after flushPromise has been assigned,
+    // even when uploadAll() finishes at once because the queue is empty.
+    flushPromise = uploadAll().then(function (ok) {
+      flushPromise = null;
+      updateSyncBanner();
+      return ok;
+    }, function () {
+      flushPromise = null;
+      updateSyncBanner();
+      return false;
+    });
+    return flushPromise;
   }
 
   // ------------------------------------------------------------------ welcome
@@ -323,8 +352,7 @@
     var answers = collectAnswers();
     if (answers.missing) return;
     var trial = state.trials[state.index];
-    var q = queue();
-    q.push({
+    enqueue({
       rid: randomId(),
       study_id: S.study_id,
       annotator: state.annotator,
@@ -343,7 +371,6 @@
       client_time: new Date().toISOString(),
       user_agent: (navigator.userAgent || '').slice(0, 400)
     });
-    saveQueue(q);
     if (trial.kind === 'pair') {
       var done = doneMap();
       done[trial.item] = (done[trial.item] || 0) + 1;
@@ -359,10 +386,13 @@
   async function renderDone() {
     $('progressBar').style.width = '100%';
     $('doneText').textContent = '已完成 ' + completedCount() + ' 题。';
+    $('doneWarn').hidden = true;
     show('done');
-    var ok = await flush();
-    $('doneWarn').hidden = ok;
-    $('doneWarn').textContent = ok ? '' : '有 ' + queue().length + ' 条答案还没上传，请保持联网，点上方“重试”。';
+    var ok = await flush();       // waits for the upload already in progress, if any
+    if (!ok && queue().length) {
+      $('doneWarn').textContent = '有 ' + queue().length + ' 条答案还没上传，请保持联网，点上方“重试”。';
+      $('doneWarn').hidden = false;
+    }
   }
 
   // ------------------------------------------------------------------ start-up
@@ -396,7 +426,7 @@
     });
     show('welcome');
     var local = ['localhost', '127.0.0.1'].indexOf(window.location.hostname) >= 0;
-    if (local) window.__vps = { flush: flush, queue: queue };  // hooks for local tests only
+    if (local) window.__vps = { flush: flush, queue: queue, enqueue: enqueue };  // hooks for local tests only
     if (params.get('autostart') === '1' && local) start();     // local testing only
   }
 

@@ -1,5 +1,5 @@
 {
- "study_id": "study-ed017b1257a0",
+ "study_id": "study-0886cfdcf8c6",
  "pilot": false,
  "title": {
   "zh": "视频对比问卷",
@@ -88,7 +88,7 @@
   "table": "responses"
  },
  "stories": {
-  "demo_notebook": {
+  "notebook": {
    "title": {
     "zh": "回去取笔记本",
     "en": "Back for the Notebook"
@@ -98,7 +98,7 @@
     "en": "A student picks up her backpack in the classroom and stores it in a locker. Realizing she left her notebook on the classroom desk, she goes back for it, then returns to the locker room and puts the notebook into her backpack."
    }
   },
-  "demo_painter": {
+  "painter": {
    "title": {
     "zh": "风景中的画家",
     "en": "Painting Across Landscapes"
@@ -108,7 +108,7 @@
     "en": "A painter works on a painting in different places: a desert, a stormy coast, and a snowy landscape."
    }
   },
-  "demo_recipe": {
+  "recipe": {
    "title": {
     "zh": "流动的菜谱",
     "en": "A Recipe on the Move"
@@ -121,125 +121,125 @@
  },
  "pairs": [
   {
-   "id": "pb8ebc9510d",
-   "story": "demo_notebook",
+   "id": "p7621ffee95",
+   "story": "recipe",
    "a": {
-    "v": "media/1dd8ab7429788ff4.mp4",
-    "p": "media/1dd8ab7429788ff4.jpg",
-    "d": 28.0
-   },
-   "b": {
-    "v": "media/35dcdbcf95420205.mp4",
-    "p": "media/35dcdbcf95420205.jpg",
-    "d": 16.08
-   }
-  },
-  {
-   "id": "p4b9446a594",
-   "story": "demo_painter",
-   "a": {
-    "v": "media/1793e81a272b2405.mp4",
-    "p": "media/1793e81a272b2405.jpg",
-    "d": 64.0
-   },
-   "b": {
-    "v": "media/88e21df131147ea2.mp4",
-    "p": "media/88e21df131147ea2.jpg",
-    "d": 48.16
-   }
-  },
-  {
-   "id": "pd4daedecbf",
-   "story": "demo_recipe",
-   "a": {
-    "v": "media/06ecbf94f4da1d20.mp4",
-    "p": "media/06ecbf94f4da1d20.jpg",
+    "v": "media/4c8d0165f51e5c19.mp4",
+    "p": "media/4c8d0165f51e5c19.jpg",
     "d": 35.2
    },
    "b": {
-    "v": "media/3c248b5c47ef2505.mp4",
-    "p": "media/3c248b5c47ef2505.jpg",
+    "v": "media/03273d93313147a1.mp4",
+    "p": "media/03273d93313147a1.jpg",
     "d": 32.16
    }
   },
   {
-   "id": "pb135d4c2fd",
-   "story": "demo_recipe",
+   "id": "pf24a4fed98",
+   "story": "notebook",
    "a": {
-    "v": "media/20b34bf125c0688f.mp4",
-    "p": "media/20b34bf125c0688f.jpg",
-    "d": 35.2
-   },
-   "b": {
-    "v": "media/cb3211fad7fad533.mp4",
-    "p": "media/cb3211fad7fad533.jpg",
-    "d": 32.12
-   }
-  },
-  {
-   "id": "p772e744077",
-   "story": "demo_notebook",
-   "a": {
-    "v": "media/9134c0a8a846b8e0.mp4",
-    "p": "media/9134c0a8a846b8e0.jpg",
+    "v": "media/67b55497f124e69d.mp4",
+    "p": "media/67b55497f124e69d.jpg",
     "d": 28.0
    },
    "b": {
-    "v": "media/f25231f373bf60e5.mp4",
-    "p": "media/f25231f373bf60e5.jpg",
+    "v": "media/1d80afc0e537dbb1.mp4",
+    "p": "media/1d80afc0e537dbb1.jpg",
     "d": 16.08
    }
   },
   {
-   "id": "p69fcbbf811",
-   "story": "demo_painter",
+   "id": "peadadd6f42",
+   "story": "notebook",
    "a": {
-    "v": "media/6fcd5282bcc0f5fb.mp4",
-    "p": "media/6fcd5282bcc0f5fb.jpg",
+    "v": "media/ded67f58b2e8a937.mp4",
+    "p": "media/ded67f58b2e8a937.jpg",
+    "d": 28.0
+   },
+   "b": {
+    "v": "media/afba0b533fb2f675.mp4",
+    "p": "media/afba0b533fb2f675.jpg",
+    "d": 16.08
+   }
+  },
+  {
+   "id": "pe221cc818b",
+   "story": "painter",
+   "a": {
+    "v": "media/e4fc76d7f8a7c3bf.mp4",
+    "p": "media/e4fc76d7f8a7c3bf.jpg",
     "d": 64.0
    },
    "b": {
-    "v": "media/400bbd3f343f2bc3.mp4",
-    "p": "media/400bbd3f343f2bc3.jpg",
+    "v": "media/c9b9c169db7ceb8f.mp4",
+    "p": "media/c9b9c169db7ceb8f.jpg",
     "d": 48.24
+   }
+  },
+  {
+   "id": "p1896cebe5b",
+   "story": "recipe",
+   "a": {
+    "v": "media/97eae7ea636ec96f.mp4",
+    "p": "media/97eae7ea636ec96f.jpg",
+    "d": 35.2
+   },
+   "b": {
+    "v": "media/c7479b9c33381fc6.mp4",
+    "p": "media/c7479b9c33381fc6.jpg",
+    "d": 32.12
+   }
+  },
+  {
+   "id": "p7196fc6627",
+   "story": "painter",
+   "a": {
+    "v": "media/849da3382e6f7f4b.mp4",
+    "p": "media/849da3382e6f7f4b.jpg",
+    "d": 64.0
+   },
+   "b": {
+    "v": "media/37980ee8b2fb36ea.mp4",
+    "p": "media/37980ee8b2fb36ea.jpg",
+    "d": 48.16
    }
   }
  ],
  "catches": [
   {
-   "id": "pddf4c3e520",
-   "story": "demo_painter",
+   "id": "p6e9ed97d39",
+   "story": "notebook",
    "a": {
-    "v": "media/6fcd5282bcc0f5fb.mp4",
-    "p": "media/6fcd5282bcc0f5fb.jpg"
+    "v": "media/ded67f58b2e8a937.mp4",
+    "p": "media/ded67f58b2e8a937.jpg"
    },
    "b": {
-    "v": "media/1793e81a272b2405.mp4",
-    "p": "media/1793e81a272b2405.jpg"
+    "v": "media/67b55497f124e69d.mp4",
+    "p": "media/67b55497f124e69d.jpg"
    }
   },
   {
-   "id": "pcebee24991",
-   "story": "demo_notebook",
+   "id": "pb8ac8705ee",
+   "story": "painter",
    "a": {
-    "v": "media/1dd8ab7429788ff4.mp4",
-    "p": "media/1dd8ab7429788ff4.jpg"
+    "v": "media/e4fc76d7f8a7c3bf.mp4",
+    "p": "media/e4fc76d7f8a7c3bf.jpg"
    },
    "b": {
-    "v": "media/9134c0a8a846b8e0.mp4",
-    "p": "media/9134c0a8a846b8e0.jpg"
+    "v": "media/849da3382e6f7f4b.mp4",
+    "p": "media/849da3382e6f7f4b.jpg"
    }
   },
   {
-   "id": "pd837e95e6f",
-   "story": "demo_recipe",
+   "id": "pa126c4a6ae",
+   "story": "recipe",
    "a": {
-    "v": "media/06ecbf94f4da1d20.mp4",
-    "p": "media/06ecbf94f4da1d20.jpg"
+    "v": "media/4c8d0165f51e5c19.mp4",
+    "p": "media/4c8d0165f51e5c19.jpg"
    },
    "b": {
-    "v": "media/20b34bf125c0688f.mp4",
-    "p": "media/20b34bf125c0688f.jpg"
+    "v": "media/97eae7ea636ec96f.mp4",
+    "p": "media/97eae7ea636ec96f.jpg"
    }
   }
  ]
