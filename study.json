@@ -1,0 +1,257 @@
+{
+ "study_id": "pilot-658eef388b96",
+ "pilot": true,
+ "title": {
+  "zh": "多镜头故事视频成对比较",
+  "en": "Pairwise Comparison of Multi-shot Story Videos"
+ },
+ "intro": {
+  "zh": "每道题给出一段故事梗概和两个根据同一故事生成的多镜头视频（视频 A 与视频 B）。请比较两个视频，回答四个问题。",
+  "en": "Each item shows a short story synopsis and two multi-shot videos generated for the same story (Video A and Video B). Please compare the two videos and answer four questions."
+ },
+ "instructions": {
+  "zh": [
+   "生成视频的系统名称已隐藏，左右位置随机。",
+   "请先完整观看两个视频（每个至少看完 90%），再作答。可以用“同时从头播放”按钮一起看，也可以分开看、反复看。",
+   "视频不含声音。只根据画面判断即可。",
+   "如果两个视频确实难分高下，或者看起来一样，请选“差不多”。",
+   "每组约 7 题，每题约 3–4 分钟。做完一组可以继续下一组，也可以下次再来：使用同一个评测 ID 会接着之前的进度，不会重复出题。"
+  ],
+  "en": [
+   "The names of the systems are hidden and the left/right positions are randomized.",
+   "Please watch both videos (at least 90% of each) before answering. You can play them together with “Play both from start”, or watch them separately and replay them.",
+   "The videos have no sound. Judge from the pictures only.",
+   "If the two videos are genuinely equal, or look the same, choose “About the same”.",
+   "A batch has about 7 items of 3–4 minutes each. After a batch you may continue or come back later; the same evaluator ID resumes your progress without repeating items."
+  ]
+ },
+ "consent": {
+  "zh": "我自愿参与本次评测。我的作答以匿名编号保存，只用于学术研究中的汇总统计；我可以随时停止。",
+  "en": "I take part voluntarily. My answers are stored under an anonymous code and used only for aggregate analysis in academic research. I may stop at any time."
+ },
+ "options": {
+  "left": {
+   "zh": "A 更好",
+   "en": "A is better"
+  },
+  "tie": {
+   "zh": "差不多",
+   "en": "About the same"
+  },
+  "right": {
+   "zh": "B 更好",
+   "en": "B is better"
+  }
+ },
+ "criteria": [
+  {
+   "id": "comprehension",
+   "name": {
+    "zh": "故事理解",
+    "en": "Story comprehension"
+   },
+   "question": {
+    "zh": "哪个视频让你更容易看懂这个故事（发生了什么、按什么顺序发生）？",
+    "en": "Which video makes the story easier to follow (what happens and in what order)?"
+   }
+  },
+  {
+   "id": "action",
+   "name": {
+    "zh": "动作清晰度",
+    "en": "Action clarity"
+   },
+   "question": {
+    "zh": "哪个视频中的关键动作和事件表现得更清楚？",
+    "en": "In which video are the key actions and events shown more clearly?"
+   }
+  },
+  {
+   "id": "consistency",
+   "name": {
+    "zh": "一致性",
+    "en": "Consistency"
+   },
+   "question": {
+    "zh": "哪个视频中的人物、物品和场景在不同镜头之间保持得更一致？",
+    "en": "In which video do characters, objects, and places stay more consistent across shots?"
+   }
+  },
+  {
+   "id": "overall",
+   "name": {
+    "zh": "整体偏好",
+    "en": "Overall preference"
+   },
+   "question": {
+    "zh": "综合来看，你更喜欢哪个视频？",
+    "en": "Overall, which video do you prefer?"
+   }
+  }
+ ],
+ "batch_size": 6,
+ "catch_per_batch": 1,
+ "require_watch_fraction": 0.9,
+ "backend": {
+  "type": "supabase",
+  "url": "https://kxafhieolsjbcnokmzwt.supabase.co",
+  "key": "sb_publishable_FEL5eXXy1zANSvnlkVKqbg_ncwc0e_b",
+  "table": "responses"
+ },
+ "stories": {
+  "demo_notebook": {
+   "title": {
+    "zh": "回去取笔记本",
+    "en": "Back for the Notebook"
+   },
+   "text": {
+    "zh": "一名学生在教室拿起书包，到储物间把书包放进储物柜。她发现笔记本落在了教室的课桌上，于是回教室取回笔记本，再回到储物间把笔记本放进书包。",
+    "en": "A student picks up her backpack in the classroom and stores it in a locker. Realizing she left her notebook on the classroom desk, she goes back for it, then returns to the locker room and puts the notebook into her backpack."
+   }
+  },
+  "demo_painter": {
+   "title": {
+    "zh": "风景中的画家",
+    "en": "Painting Across Landscapes"
+   },
+   "text": {
+    "zh": "一位画家在沙漠、暴风雨中的海岸和雪地等不同场景中作画。",
+    "en": "A painter works on a painting in different places: a desert, a stormy coast, and a snowy landscape."
+   }
+  },
+  "demo_recipe": {
+   "title": {
+    "zh": "流动的菜谱",
+    "en": "A Recipe on the Move"
+   },
+   "text": {
+    "zh": "一位厨师在不断变换的场景中制作同一道菜。",
+    "en": "A chef prepares the same dish while the setting keeps changing."
+   }
+  }
+ },
+ "pairs": [
+  {
+   "id": "pd23c890b85",
+   "story": "demo_notebook",
+   "a": {
+    "v": "media/bfd41561e1bea3cf.mp4",
+    "p": "media/bfd41561e1bea3cf.jpg",
+    "d": 16.08
+   },
+   "b": {
+    "v": "media/2c6fcd5b79c4adea.mp4",
+    "p": "media/2c6fcd5b79c4adea.jpg",
+    "d": 28.0
+   }
+  },
+  {
+   "id": "p9de18b3ce9",
+   "story": "demo_recipe",
+   "a": {
+    "v": "media/db1f0b2cff2d64a5.mp4",
+    "p": "media/db1f0b2cff2d64a5.jpg",
+    "d": 32.12
+   },
+   "b": {
+    "v": "media/1ee6b90a39c9c919.mp4",
+    "p": "media/1ee6b90a39c9c919.jpg",
+    "d": 35.2
+   }
+  },
+  {
+   "id": "p8acfb92e79",
+   "story": "demo_notebook",
+   "a": {
+    "v": "media/ee0b7f00ac43d82d.mp4",
+    "p": "media/ee0b7f00ac43d82d.jpg",
+    "d": 16.08
+   },
+   "b": {
+    "v": "media/1ac1a66a6fb5f442.mp4",
+    "p": "media/1ac1a66a6fb5f442.jpg",
+    "d": 28.0
+   }
+  },
+  {
+   "id": "pc6487c6a4b",
+   "story": "demo_painter",
+   "a": {
+    "v": "media/74adc571e7a45394.mp4",
+    "p": "media/74adc571e7a45394.jpg",
+    "d": 64.0
+   },
+   "b": {
+    "v": "media/ff77f090475cb5aa.mp4",
+    "p": "media/ff77f090475cb5aa.jpg",
+    "d": 48.24
+   }
+  },
+  {
+   "id": "padee82bba7",
+   "story": "demo_painter",
+   "a": {
+    "v": "media/3dea79cba710729d.mp4",
+    "p": "media/3dea79cba710729d.jpg",
+    "d": 48.16
+   },
+   "b": {
+    "v": "media/f7aafa314e412868.mp4",
+    "p": "media/f7aafa314e412868.jpg",
+    "d": 64.0
+   }
+  },
+  {
+   "id": "p3932491c4a",
+   "story": "demo_recipe",
+   "a": {
+    "v": "media/083d89d86f876672.mp4",
+    "p": "media/083d89d86f876672.jpg",
+    "d": 32.16
+   },
+   "b": {
+    "v": "media/ad8d5d62ed54a69c.mp4",
+    "p": "media/ad8d5d62ed54a69c.jpg",
+    "d": 35.2
+   }
+  }
+ ],
+ "catches": [
+  {
+   "id": "pd41ff69bc5",
+   "story": "demo_recipe",
+   "a": {
+    "v": "media/ad8d5d62ed54a69c.mp4",
+    "p": "media/ad8d5d62ed54a69c.jpg"
+   },
+   "b": {
+    "v": "media/1ee6b90a39c9c919.mp4",
+    "p": "media/1ee6b90a39c9c919.jpg"
+   }
+  },
+  {
+   "id": "pdb42c99e81",
+   "story": "demo_notebook",
+   "a": {
+    "v": "media/1ac1a66a6fb5f442.mp4",
+    "p": "media/1ac1a66a6fb5f442.jpg"
+   },
+   "b": {
+    "v": "media/2c6fcd5b79c4adea.mp4",
+    "p": "media/2c6fcd5b79c4adea.jpg"
+   }
+  },
+  {
+   "id": "pcb97831366",
+   "story": "demo_painter",
+   "a": {
+    "v": "media/74adc571e7a45394.mp4",
+    "p": "media/74adc571e7a45394.jpg"
+   },
+   "b": {
+    "v": "media/f7aafa314e412868.mp4",
+    "p": "media/f7aafa314e412868.jpg"
+   }
+  }
+ ]
+}

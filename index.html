@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <title>视频成对比较评测</title>
+  <link rel="stylesheet" href="style.css?v=1c9bbdc1">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand" id="brand">视频成对比较评测</div>
+      <div class="progress-wrap" id="progressWrap" hidden>
+        <span class="progress-text" id="progressText"></span>
+        <div class="progress" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="banner-wrap">
+    <div class="banner" id="pilotBanner" hidden>试运行版本：这里的视频只用于测试评测流程。<span class="en">Trial run: these videos are only for testing the procedure.</span></div>
+    <div class="banner warn" id="syncBanner" hidden>
+      <span id="syncText"></span>
+      <button class="btn secondary" id="syncRetry" type="button">重新上传 <span class="en">Retry</span></button>
+    </div>
+  </div>
+
+  <main>
+    <section id="view-welcome" class="view narrow">
+      <div class="card">
+        <h1 id="welcomeTitle"></h1>
+        <p class="lead" id="welcomeIntro"></p>
+        <h2 class="section-title">说明 <span class="en">Instructions</span></h2>
+        <ol class="instructions" id="instructions"></ol>
+        <div class="field">
+          <label for="annotatorId">评测 ID <span class="en">Evaluator ID</span></label>
+          <input id="annotatorId" type="text" maxlength="64" autocomplete="off" spellcheck="false"
+                 placeholder="例如：组织者分配给你的编号 / e.g. the code you were given">
+          <p class="help">请在同一台设备、同一个浏览器里用同一个 ID 继续作答，系统会接着之前的进度。<span class="en">Continue on the same device and browser with the same ID to resume.</span></p>
+        </div>
+        <label class="consent">
+          <input id="consent" type="checkbox">
+          <span id="consentText"></span>
+        </label>
+        <p class="error" id="welcomeError" role="alert" hidden></p>
+        <div class="actions">
+          <button class="btn primary" id="startBtn" type="button">开始评测 <span class="en">Start</span></button>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-trial" class="view" hidden>
+      <div class="card story">
+        <div class="eyebrow">故事梗概 <span class="en">Story</span></div>
+        <h2 class="story-title" id="storyTitle"></h2>
+        <p class="story-text" id="storyText"></p>
+        <p class="story-text en" id="storyTextEn"></p>
+      </div>
+
+      <div class="toolbar">
+        <button class="btn secondary" id="playBoth" type="button">▶ 同时从头播放 <span class="en">Play both from start</span></button>
+        <span class="hint" id="watchHint"></span>
+      </div>
+
+      <div class="videos">
+        <figure class="video-card">
+          <figcaption><span class="tag">A</span>视频 A <span class="en">Video A</span></figcaption>
+          <div class="video-slot" id="slotL"></div>
+          <div class="watch"><div class="watch-bar"><div class="watch-fill" id="fillL"></div></div><span class="watch-text" id="textL"></span></div>
+        </figure>
+        <figure class="video-card">
+          <figcaption><span class="tag">B</span>视频 B <span class="en">Video B</span></figcaption>
+          <div class="video-slot" id="slotR"></div>
+          <div class="watch"><div class="watch-bar"><div class="watch-fill" id="fillR"></div></div><span class="watch-text" id="textR"></span></div>
+        </figure>
+      </div>
+
+      <form class="questions" id="questions" onsubmit="return false"></form>
+
+      <div class="submit-row">
+        <p class="hint" id="submitHint" aria-live="polite"></p>
+        <button class="btn primary" id="submitBtn" type="button" disabled>提交，下一题 <span class="en">Submit &amp; next</span></button>
+      </div>
+    </section>
+
+    <section id="view-done" class="view narrow" hidden>
+      <div class="card center">
+        <div class="big-check" aria-hidden="true">✓</div>
+        <h1>这一组完成了，谢谢！ <span class="en">Batch complete — thank you!</span></h1>
+        <p class="lead" id="doneText"></p>
+        <p class="error" id="doneWarn" hidden></p>
+        <div class="actions center">
+          <button class="btn primary" id="continueBtn" type="button">继续下一组 <span class="en">Next batch</span></button>
+          <button class="btn secondary" id="finishBtn" type="button">先到这里 <span class="en">Stop here</span></button>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-message" class="view narrow" hidden>
+      <div class="card center">
+        <h1 id="messageTitle"></h1>
+        <p class="lead" id="messageText"></p>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js?v=1c9bbdc1"></script>
+</body>
+</html>
