@@ -6,7 +6,7 @@
   <meta name="robots" content="noindex, nofollow">
   <meta name="referrer" content="no-referrer">
   <title>视频对比问卷</title>
-  <link rel="stylesheet" href="style.css?v=0652171d">
+  <link rel="stylesheet" href="style.css?v=220d3f3d">
 </head>
 <body>
   <header class="topbar">
@@ -66,13 +66,16 @@
 
     <section id="view-done" class="view narrow" hidden>
       <div class="card center">
-        <div class="big-check" aria-hidden="true">✓</div>
-        <h1>完成，谢谢！</h1>
-        <p class="lead" id="doneText"></p>
-        <p class="error" id="doneWarn" hidden></p>
-        <div class="actions center">
+        <div class="big-check saving" id="doneIcon" aria-hidden="true">…</div>
+        <h1 id="doneTitle" aria-live="polite">正在保存答案…</h1>
+        <p class="lead" id="doneText">请稍等，先不要关闭页面。</p>
+        <p class="error" id="doneWarn" role="alert" hidden></p>
+        <div class="actions center" id="doneActions" hidden>
           <button class="btn primary" id="continueBtn" type="button">再答一次</button>
           <button class="btn secondary" id="finishBtn" type="button">结束</button>
+        </div>
+        <div class="actions center" id="doneRetryRow" hidden>
+          <button class="btn primary" id="doneRetry" type="button">重试</button>
         </div>
       </div>
     </section>
@@ -85,6 +88,6 @@
     </section>
   </main>
 
-  <script src="app.js?v=0652171d"></script>
+  <script src="app.js?v=220d3f3d"></script>
 </body>
 </html>

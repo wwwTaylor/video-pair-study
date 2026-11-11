@@ -13,6 +13,7 @@
   var nVideos = 2;         // videos per item
   var memQueue = null;     // answers waiting for upload; the single source of truth (mirrored to localStorage)
   var flushPromise = null; // the upload loop in progress, shared by every caller
+  var uploadFailed = false; // an upload attempt has failed and answers are still waiting
   var state = {
     annotator: '',
     sessionId: '',
@@ -79,6 +80,7 @@
   function show(view) {
     ['welcome', 'trial', 'done', 'message'].forEach(function (v) { $('view-' + v).hidden = v !== view; });
     $('progressWrap').hidden = view !== 'trial';
+    if (S) updateSyncBanner();     // the notices depend on which screen is shown
     window.scrollTo(0, 0);
   }
   function message(title, text) {
@@ -113,11 +115,40 @@
     queue().push(record);                         // append only: never overwrite pending answers
     persist();
   }
+  function backedUp() {            // are the waiting answers also saved in this browser's storage?
+    var stored = lsJSON(queueKey(), null);
+    return Array.isArray(stored) && stored.length === queue().length;
+  }
+  // The banner appears once an upload has failed and stays until every answer is stored.
+  // The last screen shows the same thing in the middle of the page, so it is not repeated there.
   function updateSyncBanner() {
     var n = queue().length;
-    $('syncBanner').hidden = n === 0 || flushPromise !== null;
+    if (n === 0) uploadFailed = false;
+    $('syncBanner').hidden = n === 0 || !uploadFailed || !$('view-done').hidden;
     $('syncText').textContent = '有 ' + n + ' 条答案还没上传，联网后会自动重传。';
-    if (n === 0) $('doneWarn').hidden = true;
+    $('syncRetry').disabled = flushPromise !== null;
+    paintDone();
+  }
+
+  // The last screen has three states: saving, saved, failed. It thanks the person and offers
+  // "finish" only when every answer is stored.
+  function paintDone() {
+    if ($('view-done').hidden) return;
+    var n = queue().length;
+    var mode = n === 0 ? 'saved' : (uploadFailed ? 'failed' : 'saving');
+    var busy = flushPromise !== null;
+    $('doneIcon').className = 'big-check ' + mode;
+    $('doneIcon').textContent = mode === 'saved' ? '✓' : (mode === 'failed' ? '!' : '…');
+    $('doneTitle').textContent = mode === 'saved' ? '完成，谢谢！' : (mode === 'failed' ? '答案还没有保存' : '正在保存答案…');
+    $('doneText').textContent = mode === 'saved' ? '已完成 ' + completedCount() + ' 题，答案已保存。' : '请稍等，先不要关闭页面。';
+    $('doneText').hidden = mode === 'failed';
+    $('doneWarn').textContent = '连不上服务器，有 ' + n + ' 条答案没存上。请先不要关闭页面，换个网络（比如手机热点）再点“重试”。'
+      + (backedUp() ? '也可以过后用同一个浏览器重新打开本页，会自动补传。' : '');
+    $('doneWarn').hidden = mode !== 'failed';
+    $('doneActions').hidden = mode !== 'saved';
+    $('doneRetryRow').hidden = mode !== 'failed';
+    $('doneRetry').disabled = busy;
+    $('doneRetry').textContent = busy ? '正在重试…' : '重试';
   }
 
   async function sendOne(record) {
@@ -146,7 +177,7 @@
   async function uploadAll() {
     while (queue().length) {
       var record = queue()[0];
-      if (!(await sendOne(record))) break;
+      if (!(await sendOne(record))) { uploadFailed = true; break; }
       var q = queue();
       var at = q.indexOf(record);
       if (at >= 0) q.splice(at, 1);
@@ -165,9 +196,11 @@
       return ok;
     }, function () {
       flushPromise = null;
+      uploadFailed = queue().length > 0;
       updateSyncBanner();
       return false;
     });
+    updateSyncBanner();            // the retry buttons show that an attempt is running
     return flushPromise;
   }
 
@@ -484,17 +517,11 @@
     if (state.index < state.trials.length) renderTrial(); else renderDone();
   }
 
-  async function renderDone() {
+  function renderDone() {
     $('progressBar').style.width = '100%';
-    $('doneText').textContent = '已完成 ' + completedCount() + ' 题。';
     $('continueBtn').textContent = state.remainingNew > 0 ? '继续' : '再答一次';
-    $('doneWarn').hidden = true;
-    show('done');
-    var ok = await flush();       // waits for the upload already in progress, if any
-    if (!ok && queue().length) {
-      $('doneWarn').textContent = '有 ' + queue().length + ' 条答案还没上传，请保持联网，点上方“重试”。';
-      $('doneWarn').hidden = false;
-    }
+    show('done');                 // paints "saving", "saved" or "failed" (see paintDone)
+    flush();                      // joins the upload already in progress, if any
   }
 
   // ------------------------------------------------------------------ start-up
@@ -522,8 +549,12 @@
     $('playBoth').addEventListener('click', playAll);
     $('submitBtn').addEventListener('click', submit);
     $('syncRetry').addEventListener('click', function () { flush(); });
+    $('doneRetry').addEventListener('click', function () { flush(); });
     $('continueBtn').addEventListener('click', newBatch);
-    $('finishBtn').addEventListener('click', function () { message('谢谢参与！', '可以关闭页面了。'); });
+    $('finishBtn').addEventListener('click', function () {
+      if (queue().length) { flush(); return; }    // never say goodbye while answers are unsaved
+      message('谢谢参与！', '可以关闭页面了。');
+    });
     window.addEventListener('beforeunload', function (e) {
       if ((!$('view-trial').hidden && state.dirty) || queue().length) { e.preventDefault(); e.returnValue = ''; }
     });
