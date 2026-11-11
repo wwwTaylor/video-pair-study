@@ -1,5 +1,5 @@
-/* Static (GitHub Pages) version of the pairwise evaluation page.
- * The browser picks the pairs for each evaluator and sends every answer to Supabase.
+/* Static (GitHub Pages) version of the pairwise video questionnaire.
+ * The browser picks the pairs for each person and sends every answer to Supabase.
  * Answers that cannot be sent right away are kept in this browser and retried. */
 (function () {
   'use strict';
@@ -9,7 +9,7 @@
   var pairById = {};
   var flushing = false;
   var state = {
-    annotator: '',         // normalised evaluator id
+    annotator: '',
     sessionId: '',
     trials: [],
     index: 0,
@@ -17,8 +17,7 @@
     trialStart: 0,
     watch: { l: 0, r: 0 },
     gen: 0,
-    dirty: false,
-    busy: false
+    dirty: false
   };
 
   // ------------------------------------------------------------------ helpers
@@ -27,7 +26,6 @@
   function lsJSON(key, fallback) {
     try { var v = window.localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch (e) { return fallback; }
   }
-
   function hashStr(s) {
     var h = 2166136261 >>> 0;
     for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
@@ -57,6 +55,7 @@
   }
   function normalise(id) { return id.trim().split(/\s+/).join(' ').toLowerCase(); }
   function mediaName(path) { var m = /media\/([0-9a-f]+)\.mp4$/.exec(path || ''); return m ? m[1] : String(path).slice(0, 64); }
+  function txt(obj) { return obj ? (obj.zh || obj.en || '') : ''; }
 
   function el(tag, attrs, children) {
     var node = document.createElement(tag);
@@ -69,12 +68,6 @@
       if (c !== null && c !== undefined) node.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
     });
     return node;
-  }
-  function fillBilingual(node, obj, block) {
-    node.textContent = '';
-    if (!obj) return;
-    if (obj.zh) node.appendChild(document.createTextNode(obj.zh));
-    if (obj.en) node.appendChild(el('span', { class: block ? 'en block' : 'en', text: obj.en }));
   }
   function show(view) {
     ['welcome', 'trial', 'done', 'message'].forEach(function (v) { $('view-' + v).hidden = v !== view; });
@@ -99,14 +92,11 @@
 
   // ------------------------------------------------------------------ upload queue
   function queue() { return lsJSON(queueKey(), []); }
-  function saveQueue(q) {
-    if (!lsSet(queueKey(), JSON.stringify(q))) console.warn('could not store the upload queue');
-    updateSyncBanner();
-  }
+  function saveQueue(q) { lsSet(queueKey(), JSON.stringify(q)); updateSyncBanner(); }
   function updateSyncBanner() {
     var n = queue().length;
     $('syncBanner').hidden = n === 0 || flushing;
-    $('syncText').textContent = '有 ' + n + ' 条答案还没有上传成功（已保存在本浏览器，会自动重试）。请保持联网。';
+    $('syncText').textContent = '有 ' + n + ' 条答案还没上传，联网后会自动重传。';
   }
 
   async function sendOne(record) {
@@ -148,19 +138,10 @@
 
   // ------------------------------------------------------------------ welcome
   function renderWelcome() {
-    if (S.title && S.title.zh) { document.title = S.title.zh; $('brand').textContent = S.title.zh; }
-    fillBilingual($('welcomeTitle'), S.title, false);
-    fillBilingual($('welcomeIntro'), S.intro, true);
-    var list = $('instructions');
-    list.textContent = '';
-    var zh = (S.instructions && S.instructions.zh) || [];
-    var en = (S.instructions && S.instructions.en) || [];
-    for (var i = 0; i < Math.max(zh.length, en.length); i++) {
-      var li = el('li', {}, [zh[i] || '']);
-      if (en[i]) li.appendChild(el('span', { class: 'en', text: en[i] }));
-      list.appendChild(li);
-    }
-    fillBilingual($('consentText'), S.consent, true);
+    var title = txt(S.title);
+    if (title) { document.title = title; $('brand').textContent = title; $('welcomeTitle').textContent = title; }
+    $('welcomeIntro').textContent = txt(S.intro);
+    $('consentText').textContent = txt(S.consent);
     $('pilotBanner').hidden = !S.pilot;
   }
 
@@ -168,39 +149,26 @@
     var form = $('questions');
     form.textContent = '';
     S.criteria.forEach(function (c, i) {
-      var legend = el('legend', {}, [(i + 1) + '. ' + (c.name.zh || c.id)]);
-      if (c.name.en) legend.appendChild(el('span', { class: 'en', text: c.name.en }));
-      var q = el('p', { class: 'qtext' }, [c.question.zh || '']);
-      if (c.question.en) q.appendChild(el('span', { class: 'en', text: c.question.en }));
-      var choices = el('div', { class: 'choices', role: 'radiogroup', 'aria-label': c.name.zh || c.id });
+      var q = el('p', { class: 'qtext' }, [(i + 1) + '. ' + txt(c.question)]);
+      var choices = el('div', { class: 'choices', role: 'radiogroup', 'aria-label': txt(c.question) });
       ['left', 'tie', 'right'].forEach(function (value) {
-        var opt = S.options[value];
         var input = el('input', { type: 'radio', name: c.id, value: value });
         input.addEventListener('change', function () { state.dirty = true; updateSubmit(); });
-        var label = el('span', {}, [opt.zh]);
-        if (opt.en) label.appendChild(el('small', { text: opt.en }));
-        choices.appendChild(el('label', { class: 'choice' }, [input, label]));
+        choices.appendChild(el('label', { class: 'choice' }, [input, el('span', { text: txt(S.options[value]) })]));
       });
-      form.appendChild(el('fieldset', { class: 'question' }, [legend, q, choices]));
+      form.appendChild(el('fieldset', { class: 'question' }, [q, choices]));
     });
   }
 
   function start() {
-    var raw = $('annotatorId').value;
-    var err = $('welcomeError');
-    err.hidden = true;
-    var id = normalise(raw);
-    if (!id || id.length > 64) {
-      err.textContent = '请填写评测 ID（1–64 个字符）。Please enter your evaluator ID.';
-      err.hidden = false;
-      return;
+    var input = $('annotatorId');
+    var id = normalise(input.value);
+    if (!id) {                       // "随便填": an empty box is fine, we make one up
+      id = 'anon-' + randomId().slice(0, 6);
+      input.value = id;
     }
-    if (!$('consent').checked) {
-      err.textContent = '请先勾选同意参与。Please confirm the consent statement first.';
-      err.hidden = false;
-      return;
-    }
-    lsSet('vps_annotator', raw.trim());
+    if (id.length > 64) id = id.slice(0, 64);
+    lsSet('vps_annotator', id);
     state.annotator = id;
     newBatch();
   }
@@ -225,7 +193,7 @@
     var rnd = seeded(hashStr(state.sessionId));
     var trials = chosen.map(function (id) {
       var p = pairById[id];
-      var flip = rnd() < 0.5;
+      var flip = S.fixed_order ? false : rnd() < 0.5;   // fixed_order: keep the built A/B order
       return { item: id, kind: 'pair', story: p.story, left: flip ? p.b : p.a, right: flip ? p.a : p.b, round: round };
     });
     for (var c = 0; c < S.catch_per_batch && S.catches.length && trials.length; c++) {
@@ -242,7 +210,7 @@
     state.trials = trials;
     state.index = 0;
     state.remainingNew = Math.max(0, fresh.length - chosen.length);
-    if (!trials.length) { message('没有可评的题目', 'No items are available.'); return; }
+    if (!trials.length) { message('暂时没有题目', ''); return; }
     show('trial');
     renderTrial();
   }
@@ -251,19 +219,13 @@
   function renderTrial() {
     var trial = state.trials[state.index];
     var n = state.trials.length;
-    $('progressText').textContent = '本组第 ' + (state.index + 1) + ' / ' + n + ' 题 · 累计完成 ' + completedCount() + ' 题';
+    $('progressText').textContent = '第 ' + (state.index + 1) + ' / ' + n + ' 题';
     $('progressBar').style.width = (100 * state.index / n) + '%';
     var story = S.stories[trial.story] || {};
-    var title = story.title || {};
-    var text = story.text || {};
-    var titleNode = $('storyTitle');
-    titleNode.textContent = title.zh || title.en || '';
-    if (title.zh && title.en) titleNode.appendChild(el('span', { class: 'en', text: title.en }));
-    titleNode.hidden = !(title.zh || title.en);
-    $('storyText').textContent = text.zh || '';
-    $('storyText').hidden = !text.zh;
-    $('storyTextEn').textContent = text.en || '';
-    $('storyTextEn').hidden = !text.en;
+    $('storyTitle').textContent = txt(story.title);
+    $('storyTitle').hidden = !txt(story.title);
+    $('storyText').textContent = txt(story.text);
+    $('storyText').hidden = !txt(story.text);
     Array.prototype.forEach.call($('questions').querySelectorAll('input[type=radio]'), function (r) { r.checked = false; });
     state.dirty = false;
     state.watch = { l: 0, r: 0 };
@@ -282,20 +244,22 @@
     v.controls = true;
     v.preload = 'auto';
     v.muted = true;
+    v.autoplay = true;               // starts by itself (muted videos may autoplay)
     v.playsInline = true;
     v.setAttribute('playsinline', '');
-    v.setAttribute('controlslist', 'nodownload noplaybackrate noremoteplayback');
+    v.setAttribute('controlslist', 'nodownload noremoteplayback');
     v.disablePictureInPicture = true;
     if (info.p) v.poster = info.p;
     v.src = info.v;
     v.addEventListener('contextmenu', function (e) { e.preventDefault(); });
     slot.appendChild(v);
-    trackWatch(v, side, slotKey);
-    setWatchUI(slotKey, 0);
+    trackWatch(v, side);
+    var p = v.play();
+    if (p && p.catch) p.catch(function () { /* the user can press play */ });
   }
 
-  // Counts which half-second segments were actually played at normal pace.
-  function trackWatch(video, side, slotKey) {
+  // Records (without enforcing anything) how much of each video was played.
+  function trackWatch(video, side) {
     var STEP = 0.5, buckets = null, last = null, gen = state.gen;
     function ensure() {
       if (!buckets && isFinite(video.duration) && video.duration > 0) {
@@ -304,39 +268,24 @@
       return buckets;
     }
     function mark(from, to) {
-      if (!ensure()) return;
+      if (!ensure() || gen !== state.gen) return;
       var a = Math.max(0, Math.floor(from / STEP));
       var b = Math.min(buckets.length - 1, Math.floor(to / STEP));
       for (var i = a; i <= b; i++) buckets[i] = 1;
-    }
-    function refresh() {
-      if (!buckets || gen !== state.gen) return;
       var sum = 0;
-      for (var i = 0; i < buckets.length; i++) sum += buckets[i];
+      for (var j = 0; j < buckets.length; j++) sum += buckets[j];
       state.watch[side] = sum / buckets.length;
-      setWatchUI(slotKey, state.watch[side]);
-      updateSubmit();
     }
-    video.addEventListener('loadedmetadata', function () { ensure(); refresh(); });
     video.addEventListener('play', function () { last = video.currentTime; });
     video.addEventListener('seeked', function () { last = video.currentTime; });
     video.addEventListener('timeupdate', function () {
       var t = video.currentTime;
-      if (!video.seeking && !video.paused && last !== null && t >= last && t - last < 1.5) { mark(last, t); refresh(); }
+      if (!video.seeking && !video.paused && last !== null && t >= last && t - last < 1.5) mark(last, t);
       last = t;
     });
     video.addEventListener('ended', function () {
-      if (ensure() && last !== null && video.duration - last < 1.5) { mark(last, video.duration); refresh(); }
+      if (ensure() && last !== null && video.duration - last < 1.5) mark(last, video.duration);
     });
-  }
-
-  function setWatchUI(slotKey, fraction) {
-    var need = S.require_watch_fraction || 0;
-    var pct = Math.round(fraction * 100);
-    var fill = $('fill' + slotKey);
-    fill.style.width = pct + '%';
-    fill.classList.toggle('done', fraction >= need);
-    $('text' + slotKey).textContent = fraction >= need ? '✓ 已看 ' + pct + '%' : '已看 ' + pct + '% / 需 ' + Math.round(need * 100) + '%';
   }
 
   function playBoth() {
@@ -345,7 +294,7 @@
     vids.forEach(function (v) {
       if (!v) return;
       var p = v.play();
-      if (p && p.catch) p.catch(function () { /* the user can press play */ });
+      if (p && p.catch) p.catch(function () { /* ignore */ });
     });
   }
 
@@ -367,25 +316,15 @@
   }
 
   function updateSubmit() {
-    var need = S.require_watch_fraction || 0;
-    var answers = collectAnswers();
-    var notes = [];
-    if (state.watch.l < need) notes.push('请看完视频 A');
-    if (state.watch.r < need) notes.push('请看完视频 B');
-    if (answers.missing) notes.push('还有 ' + answers.missing + ' 个问题未回答');
-    $('submitHint').textContent = notes.length ? notes.join(' · ') : '可以提交了 · Ready to submit';
-    $('watchHint').textContent = (state.watch.l >= need && state.watch.r >= need)
-      ? '两个视频都已看完，可以反复观看后再作答。'
-      : '每个视频需按正常速度看完至少 ' + Math.round(need * 100) + '%，才能提交。';
-    $('submitBtn').disabled = notes.length > 0 || state.busy;
+    $('submitBtn').disabled = collectAnswers().missing > 0;
   }
 
   function submit() {
-    if (state.busy) return;
     var answers = collectAnswers();
     if (answers.missing) return;
     var trial = state.trials[state.index];
-    var record = {
+    var q = queue();
+    q.push({
       rid: randomId(),
       study_id: S.study_id,
       annotator: state.annotator,
@@ -403,9 +342,7 @@
       position: state.index,
       client_time: new Date().toISOString(),
       user_agent: (navigator.userAgent || '').slice(0, 400)
-    };
-    var q = queue();
-    q.push(record);
+    });
     saveQueue(q);
     if (trial.kind === 'pair') {
       var done = doneMap();
@@ -421,20 +358,11 @@
 
   async function renderDone() {
     $('progressBar').style.width = '100%';
-    var box = $('doneText');
-    var n = completedCount();
-    box.textContent = '你已累计完成 ' + n + ' 题。';
-    if (state.remainingNew > 0) {
-      box.appendChild(document.createTextNode('还有 ' + state.remainingNew + ' 对视频你还没有评过，可以继续下一组，也可以下次再来。'));
-    } else {
-      box.appendChild(document.createTextNode('你已经评过全部视频对。如果继续，会再次出现评过的视频对（左右位置会重新随机）。'));
-    }
-    box.appendChild(el('span', { class: 'en block', text: 'Completed: ' + n + '.' }));
+    $('doneText').textContent = '已完成 ' + completedCount() + ' 题。';
     show('done');
     var ok = await flush();
-    var warn = $('doneWarn');
-    warn.hidden = ok;
-    warn.textContent = ok ? '' : '有 ' + queue().length + ' 条答案还没有上传成功。请保持联网并点击页面上方的“重新上传”，上传成功前请不要清除浏览器数据。';
+    $('doneWarn').hidden = ok;
+    $('doneWarn').textContent = ok ? '' : '有 ' + queue().length + ' 条答案还没上传，请保持联网，点上方“重试”。';
   }
 
   // ------------------------------------------------------------------ start-up
@@ -444,7 +372,7 @@
       if (!res.ok) throw new Error('HTTP ' + res.status);
       S = await res.json();
     } catch (e) {
-      message('页面加载失败', 'Could not load the study: ' + e.message);
+      message('页面加载失败', e.message);
       return;
     }
     S.pairs.forEach(function (p) { pairById[p.id] = p; });
@@ -462,19 +390,14 @@
     $('submitBtn').addEventListener('click', submit);
     $('syncRetry').addEventListener('click', function () { flush(); });
     $('continueBtn').addEventListener('click', newBatch);
-    $('finishBtn').addEventListener('click', function () {
-      message('谢谢参与！', '可以关闭此页面。下次在同一个浏览器里用同一个评测 ID 进入，会接着之前的进度。You can close this page now.');
-    });
+    $('finishBtn').addEventListener('click', function () { message('谢谢参与！', '可以关闭页面了。'); });
     window.addEventListener('beforeunload', function (e) {
       if ((!$('view-trial').hidden && state.dirty) || queue().length) { e.preventDefault(); e.returnValue = ''; }
     });
     show('welcome');
     var local = ['localhost', '127.0.0.1'].indexOf(window.location.hostname) >= 0;
     if (local) window.__vps = { flush: flush, queue: queue };  // hooks for local tests only
-    if (params.get('autostart') === '1' && local && $('annotatorId').value) {  // local testing only
-      $('consent').checked = true;
-      start();
-    }
+    if (params.get('autostart') === '1' && local) start();     // local testing only
   }
 
   init();

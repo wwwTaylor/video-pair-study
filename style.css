@@ -269,6 +269,16 @@ h2 { font-size: 1.1rem; margin: 0; }
   font-weight: 800;
 }
 
+/* ------------------------------------------------------------------ compact layout (static version) */
+.story-line { margin: 2px 0 12px; }
+.story-line .story-title { margin: 0 0 2px; font-size: 1.12rem; }
+.story-line .story-text { color: var(--muted); }
+.questions.compact { margin-top: 12px; gap: 12px; }
+.questions.compact .question { padding: 12px 14px 14px; }
+.questions.compact .qtext { margin: 0 0 10px; font-weight: 600; }
+.questions.compact .choice span { min-height: 44px; }
+.video-card figcaption .tag { margin-right: 0; }
+
 /* ------------------------------------------------------------------ banners (static version) */
 .banner {
   max-width: 1280px;
