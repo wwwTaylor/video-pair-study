@@ -1,5 +1,5 @@
 {
- "study_id": "study-f1925609d30e",
+ "study_id": "study-869bfaea4e76",
  "pilot": false,
  "title": {
   "zh": "视频对比问卷",
@@ -44,14 +44,14 @@
    }
   },
   {
-   "id": "action",
+   "id": "coherence",
    "name": {
-    "zh": "动作清晰度",
-    "en": "Action clarity"
+    "zh": "连贯性",
+    "en": "Coherence"
    },
    "question": {
-    "zh": "哪个动作更清楚？",
-    "en": "Which shows the actions more clearly?"
+    "zh": "哪个更连贯？",
+    "en": "Which is more coherent?"
    }
   },
   {
@@ -61,19 +61,19 @@
     "en": "Consistency"
    },
    "question": {
-    "zh": "哪个人物和场景更一致？",
-    "en": "Which keeps characters and places more consistent?"
+    "zh": "哪个人物和场景一致性更好？",
+    "en": "Which has better character and scene consistency?"
    }
   },
   {
    "id": "overall",
    "name": {
-    "zh": "整体偏好",
-    "en": "Overall preference"
+    "zh": "整体",
+    "en": "Overall"
    },
    "question": {
-    "zh": "整体更喜欢哪个？",
-    "en": "Which do you prefer overall?"
+    "zh": "整体哪个更好？",
+    "en": "Which is better overall?"
    }
   }
  ],
@@ -122,125 +122,125 @@
  },
  "pairs": [
   {
-   "id": "pbf810a3747",
+   "id": "pd101c59e48",
    "story": "example1",
    "a": {
-    "v": "media/3941dfdb60060610.mp4",
-    "p": "media/3941dfdb60060610.jpg",
+    "v": "media/ce75649d55058bd3.mp4",
+    "p": "media/ce75649d55058bd3.jpg",
     "d": 28.0
    },
    "b": {
-    "v": "media/e852946385bc8467.mp4",
-    "p": "media/e852946385bc8467.jpg",
+    "v": "media/971d5e74477ae517.mp4",
+    "p": "media/971d5e74477ae517.jpg",
     "d": 16.08
    }
   },
   {
-   "id": "pf9827114da",
+   "id": "p6fb9117163",
    "story": "example1",
    "a": {
-    "v": "media/8895988f36ecdf9a.mp4",
-    "p": "media/8895988f36ecdf9a.jpg",
+    "v": "media/b1c872a960cecfdb.mp4",
+    "p": "media/b1c872a960cecfdb.jpg",
     "d": 28.0
    },
    "b": {
-    "v": "media/3be1485c524d47d0.mp4",
-    "p": "media/3be1485c524d47d0.jpg",
+    "v": "media/d5d495eb88f7f941.mp4",
+    "p": "media/d5d495eb88f7f941.jpg",
     "d": 16.08
    }
   },
   {
-   "id": "pf6153dad0f",
+   "id": "p579a5e94a4",
    "story": "example2",
    "a": {
-    "v": "media/925776d4f954e5dd.mp4",
-    "p": "media/925776d4f954e5dd.jpg",
+    "v": "media/f4e094259e35ce25.mp4",
+    "p": "media/f4e094259e35ce25.jpg",
     "d": 64.0
    },
    "b": {
-    "v": "media/8ad887151f56fece.mp4",
-    "p": "media/8ad887151f56fece.jpg",
+    "v": "media/3fd3baeeed1c3b4e.mp4",
+    "p": "media/3fd3baeeed1c3b4e.jpg",
     "d": 48.24
    }
   },
   {
-   "id": "p87712b12ee",
+   "id": "pa10db551ef",
    "story": "example2",
    "a": {
-    "v": "media/7a6eee7e08a14d6a.mp4",
-    "p": "media/7a6eee7e08a14d6a.jpg",
+    "v": "media/384b5f6a876e65e2.mp4",
+    "p": "media/384b5f6a876e65e2.jpg",
     "d": 64.0
    },
    "b": {
-    "v": "media/86f9f3ab309ba196.mp4",
-    "p": "media/86f9f3ab309ba196.jpg",
+    "v": "media/5a7a2b4099d0b64f.mp4",
+    "p": "media/5a7a2b4099d0b64f.jpg",
     "d": 48.16
    }
   },
   {
-   "id": "p3a9f72f9b1",
+   "id": "p2d20f2b5ba",
    "story": "example3",
    "a": {
-    "v": "media/3e518307b5196a90.mp4",
-    "p": "media/3e518307b5196a90.jpg",
+    "v": "media/373c1c748c26e672.mp4",
+    "p": "media/373c1c748c26e672.jpg",
     "d": 35.2
    },
    "b": {
-    "v": "media/9d88518e0bc008cf.mp4",
-    "p": "media/9d88518e0bc008cf.jpg",
+    "v": "media/a30359e641d674e4.mp4",
+    "p": "media/a30359e641d674e4.jpg",
     "d": 32.16
    }
   },
   {
-   "id": "p54f300e61a",
+   "id": "p34eda51c1b",
    "story": "example3",
    "a": {
-    "v": "media/bfe4e202d96588da.mp4",
-    "p": "media/bfe4e202d96588da.jpg",
+    "v": "media/e5eb374a550f6a6f.mp4",
+    "p": "media/e5eb374a550f6a6f.jpg",
     "d": 35.2
    },
    "b": {
-    "v": "media/779efe2f4e447d2d.mp4",
-    "p": "media/779efe2f4e447d2d.jpg",
+    "v": "media/64c9fafae5d85d12.mp4",
+    "p": "media/64c9fafae5d85d12.jpg",
     "d": 32.12
    }
   }
  ],
  "catches": [
   {
-   "id": "p8696799c9b",
+   "id": "p1c2918f93b",
    "story": "example2",
    "a": {
-    "v": "media/925776d4f954e5dd.mp4",
-    "p": "media/925776d4f954e5dd.jpg"
+    "v": "media/f4e094259e35ce25.mp4",
+    "p": "media/f4e094259e35ce25.jpg"
    },
    "b": {
-    "v": "media/7a6eee7e08a14d6a.mp4",
-    "p": "media/7a6eee7e08a14d6a.jpg"
+    "v": "media/384b5f6a876e65e2.mp4",
+    "p": "media/384b5f6a876e65e2.jpg"
    }
   },
   {
-   "id": "pf11fe661e5",
-   "story": "example3",
-   "a": {
-    "v": "media/3e518307b5196a90.mp4",
-    "p": "media/3e518307b5196a90.jpg"
-   },
-   "b": {
-    "v": "media/bfe4e202d96588da.mp4",
-    "p": "media/bfe4e202d96588da.jpg"
-   }
-  },
-  {
-   "id": "p8cba9a4211",
+   "id": "p7b805be9d1",
    "story": "example1",
    "a": {
-    "v": "media/3941dfdb60060610.mp4",
-    "p": "media/3941dfdb60060610.jpg"
+    "v": "media/ce75649d55058bd3.mp4",
+    "p": "media/ce75649d55058bd3.jpg"
    },
    "b": {
-    "v": "media/8895988f36ecdf9a.mp4",
-    "p": "media/8895988f36ecdf9a.jpg"
+    "v": "media/b1c872a960cecfdb.mp4",
+    "p": "media/b1c872a960cecfdb.jpg"
+   }
+  },
+  {
+   "id": "p7c38beeec6",
+   "story": "example3",
+   "a": {
+    "v": "media/373c1c748c26e672.mp4",
+    "p": "media/373c1c748c26e672.jpg"
+   },
+   "b": {
+    "v": "media/e5eb374a550f6a6f.mp4",
+    "p": "media/e5eb374a550f6a6f.jpg"
    }
   }
  ]
