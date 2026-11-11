@@ -96,8 +96,8 @@
  "stories": {
   "example1_s1": {
    "title": {
-    "zh": "回去取笔记本（第 1/3 段）",
-    "en": "Back for the Notebook (part 1/3)"
+    "zh": "回去取笔记本",
+    "en": "Back for the Notebook"
    },
    "text": {
     "zh": "一名学生在教室拿起书包，到储物间把书包放进储物柜。她发现笔记本落在了教室的课桌上，于是回教室取回笔记本，再回到储物间把笔记本放进书包。",
@@ -106,8 +106,8 @@
   },
   "example1_s2": {
    "title": {
-    "zh": "回去取笔记本（第 2/3 段）",
-    "en": "Back for the Notebook (part 2/3)"
+    "zh": "回去取笔记本",
+    "en": "Back for the Notebook"
    },
    "text": {
     "zh": "一名学生在教室拿起书包，到储物间把书包放进储物柜。她发现笔记本落在了教室的课桌上，于是回教室取回笔记本，再回到储物间把笔记本放进书包。",
@@ -116,8 +116,8 @@
   },
   "example1_s3": {
    "title": {
-    "zh": "回去取笔记本（第 3/3 段）",
-    "en": "Back for the Notebook (part 3/3)"
+    "zh": "回去取笔记本",
+    "en": "Back for the Notebook"
    },
    "text": {
     "zh": "一名学生在教室拿起书包，到储物间把书包放进储物柜。她发现笔记本落在了教室的课桌上，于是回教室取回笔记本，再回到储物间把笔记本放进书包。",
@@ -126,8 +126,8 @@
   },
   "example2_s1": {
    "title": {
-    "zh": "风景中的画家（第 1/3 段）",
-    "en": "Painting Across Landscapes (part 1/3)"
+    "zh": "风景中的画家",
+    "en": "Painting Across Landscapes"
    },
    "text": {
     "zh": "一位画家在沙漠、暴风雨中的海岸和雪地等不同场景中作画。",
@@ -136,8 +136,8 @@
   },
   "example2_s2": {
    "title": {
-    "zh": "风景中的画家（第 2/3 段）",
-    "en": "Painting Across Landscapes (part 2/3)"
+    "zh": "风景中的画家",
+    "en": "Painting Across Landscapes"
    },
    "text": {
     "zh": "一位画家在沙漠、暴风雨中的海岸和雪地等不同场景中作画。",
@@ -146,8 +146,8 @@
   },
   "example2_s3": {
    "title": {
-    "zh": "风景中的画家（第 3/3 段）",
-    "en": "Painting Across Landscapes (part 3/3)"
+    "zh": "风景中的画家",
+    "en": "Painting Across Landscapes"
    },
    "text": {
     "zh": "一位画家在沙漠、暴风雨中的海岸和雪地等不同场景中作画。",
@@ -156,8 +156,8 @@
   },
   "example3_s1": {
    "title": {
-    "zh": "流动的菜谱（第 1/3 段）",
-    "en": "A Recipe on the Move (part 1/3)"
+    "zh": "流动的菜谱",
+    "en": "A Recipe on the Move"
    },
    "text": {
     "zh": "一位厨师在不断变换的场景中制作同一道菜。",
@@ -166,8 +166,8 @@
   },
   "example3_s2": {
    "title": {
-    "zh": "流动的菜谱（第 2/3 段）",
-    "en": "A Recipe on the Move (part 2/3)"
+    "zh": "流动的菜谱",
+    "en": "A Recipe on the Move"
    },
    "text": {
     "zh": "一位厨师在不断变换的场景中制作同一道菜。",
@@ -176,8 +176,8 @@
   },
   "example3_s3": {
    "title": {
-    "zh": "流动的菜谱（第 3/3 段）",
-    "en": "A Recipe on the Move (part 3/3)"
+    "zh": "流动的菜谱",
+    "en": "A Recipe on the Move"
    },
    "text": {
     "zh": "一位厨师在不断变换的场景中制作同一道菜。",
@@ -376,5 +376,13 @@
    ]
   }
  ],
- "catches": []
+ "catches": [],
+ "id_hint": {
+  "zh": "ID可以随意填写",
+  "en": "Any ID is fine"
+ },
+ "rank_label": {
+  "zh": "（排序）",
+  "en": "(rank)"
+ }
 }

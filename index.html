@@ -6,7 +6,7 @@
   <meta name="robots" content="noindex, nofollow">
   <meta name="referrer" content="no-referrer">
   <title>视频对比问卷</title>
-  <link rel="stylesheet" href="style.css?v=bb393cd7">
+  <link rel="stylesheet" href="style.css?v=0652171d">
 </head>
 <body>
   <header class="topbar">
@@ -34,7 +34,8 @@
         <p class="lead" id="welcomeIntro"></p>
         <div class="field">
           <label for="annotatorId">ID</label>
-          <input id="annotatorId" type="text" maxlength="64" autocomplete="off" spellcheck="false" placeholder="随便填">
+          <input id="annotatorId" type="text" maxlength="64" autocomplete="off" spellcheck="false" aria-describedby="idHint">
+          <p class="field-hint" id="idHint" hidden></p>
         </div>
         <p class="help" id="consentText"></p>
         <div class="actions">
@@ -84,6 +85,6 @@
     </section>
   </main>
 
-  <script src="app.js?v=bb393cd7"></script>
+  <script src="app.js?v=0652171d"></script>
 </body>
 </html>

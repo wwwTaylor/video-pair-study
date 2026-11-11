@@ -177,6 +177,9 @@
     if (title) { document.title = title; $('brand').textContent = title; $('welcomeTitle').textContent = title; }
     $('welcomeIntro').textContent = txt(S.intro);
     $('consentText').textContent = txt(S.consent);
+    var idHint = txt(S.id_hint);               // small print under the ID box
+    $('idHint').textContent = idHint;
+    $('idHint').hidden = !idHint;
     $('pilotBanner').hidden = !S.pilot;
   }
 
@@ -187,8 +190,10 @@
     var hint = $('rankHint');
     hint.hidden = S.format !== 'rank';
     hint.textContent = S.format === 'rank' ? (txt(S.rank_hint) || '每个问题：按从好到差的顺序依次点击。') : '';
+    var label = S.format === 'rank' ? txt(S.rank_label) : '';     // e.g. “（排序）” after every question
     S.criteria.forEach(function (c, i) {
-      var q = el('p', { class: 'qtext' }, [(i + 1) + '. ' + txt(c.question)]);
+      var q = el('p', { class: 'qtext' },
+        [(i + 1) + '. ' + txt(c.question), label ? el('span', { class: 'qtype', text: label }) : null]);
       if (S.format === 'rank') {
         var row = el('div', { class: 'rank-row', role: 'group', 'aria-label': txt(c.question) });
         for (var v = 0; v < nVideos; v++) {
