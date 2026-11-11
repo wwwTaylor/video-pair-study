@@ -1,13 +1,18 @@
 {
- "study_id": "study-869bfaea4e76",
+ "study_id": "study-5f41356dd24b",
  "pilot": false,
+ "format": "rank",
+ "rank_hint": {
+  "zh": "每个问题：按从好到差的顺序依次点击。",
+  "en": "For each question, tap the videos from best to worst."
+ },
  "title": {
   "zh": "视频对比问卷",
   "en": "Video comparison survey"
  },
  "intro": {
-  "zh": "共 6 题，约 3 分钟。每题看两段视频（A、B），回答 4 个小问题；难分高下就选“差不多”。",
-  "en": "6 items, about 3 minutes. Watch two videos (A, B) per item and answer 4 short questions; choose “Same” if they are equal."
+  "zh": "共 9 题，约 3 分钟。每题有三段短视频（A、B、C），请按 4 个问题分别给它们排名。",
+  "en": "9 items, about 3 minutes. Each item shows three short videos (A, B, C); rank them for each of 4 questions."
  },
  "instructions": {
   "zh": [],
@@ -79,7 +84,7 @@
  ],
  "fixed_order": true,
  "item_order": "fixed",
- "batch_size": 6,
+ "batch_size": 9,
  "catch_per_batch": 0,
  "require_watch_fraction": 0.0,
  "backend": {
@@ -89,30 +94,90 @@
   "table": "responses"
  },
  "stories": {
-  "example1": {
+  "example1_s1": {
    "title": {
-    "zh": "回去取笔记本",
-    "en": "Back for the Notebook"
+    "zh": "回去取笔记本（第 1/3 段）",
+    "en": "Back for the Notebook (part 1/3)"
    },
    "text": {
     "zh": "一名学生在教室拿起书包，到储物间把书包放进储物柜。她发现笔记本落在了教室的课桌上，于是回教室取回笔记本，再回到储物间把笔记本放进书包。",
     "en": "A student picks up her backpack in the classroom and stores it in a locker. Realizing she left her notebook on the classroom desk, she goes back for it, then returns to the locker room and puts the notebook into her backpack."
    }
   },
-  "example2": {
+  "example1_s2": {
    "title": {
-    "zh": "风景中的画家",
-    "en": "Painting Across Landscapes"
+    "zh": "回去取笔记本（第 2/3 段）",
+    "en": "Back for the Notebook (part 2/3)"
+   },
+   "text": {
+    "zh": "一名学生在教室拿起书包，到储物间把书包放进储物柜。她发现笔记本落在了教室的课桌上，于是回教室取回笔记本，再回到储物间把笔记本放进书包。",
+    "en": "A student picks up her backpack in the classroom and stores it in a locker. Realizing she left her notebook on the classroom desk, she goes back for it, then returns to the locker room and puts the notebook into her backpack."
+   }
+  },
+  "example1_s3": {
+   "title": {
+    "zh": "回去取笔记本（第 3/3 段）",
+    "en": "Back for the Notebook (part 3/3)"
+   },
+   "text": {
+    "zh": "一名学生在教室拿起书包，到储物间把书包放进储物柜。她发现笔记本落在了教室的课桌上，于是回教室取回笔记本，再回到储物间把笔记本放进书包。",
+    "en": "A student picks up her backpack in the classroom and stores it in a locker. Realizing she left her notebook on the classroom desk, she goes back for it, then returns to the locker room and puts the notebook into her backpack."
+   }
+  },
+  "example2_s1": {
+   "title": {
+    "zh": "风景中的画家（第 1/3 段）",
+    "en": "Painting Across Landscapes (part 1/3)"
    },
    "text": {
     "zh": "一位画家在沙漠、暴风雨中的海岸和雪地等不同场景中作画。",
     "en": "A painter works on a painting in different places: a desert, a stormy coast, and a snowy landscape."
    }
   },
-  "example3": {
+  "example2_s2": {
    "title": {
-    "zh": "流动的菜谱",
-    "en": "A Recipe on the Move"
+    "zh": "风景中的画家（第 2/3 段）",
+    "en": "Painting Across Landscapes (part 2/3)"
+   },
+   "text": {
+    "zh": "一位画家在沙漠、暴风雨中的海岸和雪地等不同场景中作画。",
+    "en": "A painter works on a painting in different places: a desert, a stormy coast, and a snowy landscape."
+   }
+  },
+  "example2_s3": {
+   "title": {
+    "zh": "风景中的画家（第 3/3 段）",
+    "en": "Painting Across Landscapes (part 3/3)"
+   },
+   "text": {
+    "zh": "一位画家在沙漠、暴风雨中的海岸和雪地等不同场景中作画。",
+    "en": "A painter works on a painting in different places: a desert, a stormy coast, and a snowy landscape."
+   }
+  },
+  "example3_s1": {
+   "title": {
+    "zh": "流动的菜谱（第 1/3 段）",
+    "en": "A Recipe on the Move (part 1/3)"
+   },
+   "text": {
+    "zh": "一位厨师在不断变换的场景中制作同一道菜。",
+    "en": "A chef prepares the same dish while the setting keeps changing."
+   }
+  },
+  "example3_s2": {
+   "title": {
+    "zh": "流动的菜谱（第 2/3 段）",
+    "en": "A Recipe on the Move (part 2/3)"
+   },
+   "text": {
+    "zh": "一位厨师在不断变换的场景中制作同一道菜。",
+    "en": "A chef prepares the same dish while the setting keeps changing."
+   }
+  },
+  "example3_s3": {
+   "title": {
+    "zh": "流动的菜谱（第 3/3 段）",
+    "en": "A Recipe on the Move (part 3/3)"
    },
    "text": {
     "zh": "一位厨师在不断变换的场景中制作同一道菜。",
@@ -120,128 +185,196 @@
    }
   }
  },
- "pairs": [
+ "items": [
   {
-   "id": "pd101c59e48",
-   "story": "example1",
-   "a": {
-    "v": "media/ce75649d55058bd3.mp4",
-    "p": "media/ce75649d55058bd3.jpg",
-    "d": 28.0
-   },
-   "b": {
-    "v": "media/971d5e74477ae517.mp4",
-    "p": "media/971d5e74477ae517.jpg",
-    "d": 16.08
-   }
+   "id": "pbd59a6bba7",
+   "story": "example1_s1",
+   "videos": [
+    {
+     "v": "media/dc7cb788bf489fbd.mp4",
+     "p": "media/dc7cb788bf489fbd.jpg",
+     "d": 9.32
+    },
+    {
+     "v": "media/b46174b22326d619.mp4",
+     "p": "media/b46174b22326d619.jpg",
+     "d": 5.36
+    },
+    {
+     "v": "media/a8710f2f1cfc3ec5.mp4",
+     "p": "media/a8710f2f1cfc3ec5.jpg",
+     "d": 5.36
+    }
+   ]
   },
   {
-   "id": "p6fb9117163",
-   "story": "example1",
-   "a": {
-    "v": "media/b1c872a960cecfdb.mp4",
-    "p": "media/b1c872a960cecfdb.jpg",
-    "d": 28.0
-   },
-   "b": {
-    "v": "media/d5d495eb88f7f941.mp4",
-    "p": "media/d5d495eb88f7f941.jpg",
-    "d": 16.08
-   }
+   "id": "pfa7ac411ee",
+   "story": "example1_s2",
+   "videos": [
+    {
+     "v": "media/09bcc666fd18a464.mp4",
+     "p": "media/09bcc666fd18a464.jpg",
+     "d": 9.32
+    },
+    {
+     "v": "media/1549612597d25043.mp4",
+     "p": "media/1549612597d25043.jpg",
+     "d": 5.36
+    },
+    {
+     "v": "media/c56eb6e7051f3fcc.mp4",
+     "p": "media/c56eb6e7051f3fcc.jpg",
+     "d": 5.36
+    }
+   ]
   },
   {
-   "id": "p579a5e94a4",
-   "story": "example2",
-   "a": {
-    "v": "media/f4e094259e35ce25.mp4",
-    "p": "media/f4e094259e35ce25.jpg",
-    "d": 64.0
-   },
-   "b": {
-    "v": "media/3fd3baeeed1c3b4e.mp4",
-    "p": "media/3fd3baeeed1c3b4e.jpg",
-    "d": 48.24
-   }
+   "id": "p7dce37647b",
+   "story": "example1_s3",
+   "videos": [
+    {
+     "v": "media/1ac32611a5c6b80d.mp4",
+     "p": "media/1ac32611a5c6b80d.jpg",
+     "d": 9.32
+    },
+    {
+     "v": "media/b7954b823036898a.mp4",
+     "p": "media/b7954b823036898a.jpg",
+     "d": 5.36
+    },
+    {
+     "v": "media/0e27193353d8c989.mp4",
+     "p": "media/0e27193353d8c989.jpg",
+     "d": 5.36
+    }
+   ]
   },
   {
-   "id": "pa10db551ef",
-   "story": "example2",
-   "a": {
-    "v": "media/384b5f6a876e65e2.mp4",
-    "p": "media/384b5f6a876e65e2.jpg",
-    "d": 64.0
-   },
-   "b": {
-    "v": "media/5a7a2b4099d0b64f.mp4",
-    "p": "media/5a7a2b4099d0b64f.jpg",
-    "d": 48.16
-   }
+   "id": "pedb942030c",
+   "story": "example2_s1",
+   "videos": [
+    {
+     "v": "media/f95fbb31bc34f576.mp4",
+     "p": "media/f95fbb31bc34f576.jpg",
+     "d": 21.32
+    },
+    {
+     "v": "media/d9d5e1d0d909982a.mp4",
+     "p": "media/d9d5e1d0d909982a.jpg",
+     "d": 16.12
+    },
+    {
+     "v": "media/6daca0ce0f17d91d.mp4",
+     "p": "media/6daca0ce0f17d91d.jpg",
+     "d": 16.08
+    }
+   ]
   },
   {
-   "id": "p2d20f2b5ba",
-   "story": "example3",
-   "a": {
-    "v": "media/373c1c748c26e672.mp4",
-    "p": "media/373c1c748c26e672.jpg",
-    "d": 35.2
-   },
-   "b": {
-    "v": "media/a30359e641d674e4.mp4",
-    "p": "media/a30359e641d674e4.jpg",
-    "d": 32.16
-   }
+   "id": "p5878e034aa",
+   "story": "example2_s2",
+   "videos": [
+    {
+     "v": "media/fb9145e97aebc685.mp4",
+     "p": "media/fb9145e97aebc685.jpg",
+     "d": 21.36
+    },
+    {
+     "v": "media/e9f61da2a28bacc7.mp4",
+     "p": "media/e9f61da2a28bacc7.jpg",
+     "d": 16.08
+    },
+    {
+     "v": "media/5d92fd58e02e21c3.mp4",
+     "p": "media/5d92fd58e02e21c3.jpg",
+     "d": 16.04
+    }
+   ]
   },
   {
-   "id": "p34eda51c1b",
-   "story": "example3",
-   "a": {
-    "v": "media/e5eb374a550f6a6f.mp4",
-    "p": "media/e5eb374a550f6a6f.jpg",
-    "d": 35.2
-   },
-   "b": {
-    "v": "media/64c9fafae5d85d12.mp4",
-    "p": "media/64c9fafae5d85d12.jpg",
-    "d": 32.12
-   }
+   "id": "p2a53b9f0ba",
+   "story": "example2_s3",
+   "videos": [
+    {
+     "v": "media/676cc6371a8fb73b.mp4",
+     "p": "media/676cc6371a8fb73b.jpg",
+     "d": 21.32
+    },
+    {
+     "v": "media/2196bcf08713a776.mp4",
+     "p": "media/2196bcf08713a776.jpg",
+     "d": 16.04
+    },
+    {
+     "v": "media/d18c4100452c9c6a.mp4",
+     "p": "media/d18c4100452c9c6a.jpg",
+     "d": 16.04
+    }
+   ]
+  },
+  {
+   "id": "p40493b9281",
+   "story": "example3_s1",
+   "videos": [
+    {
+     "v": "media/9c3d29257567f6ed.mp4",
+     "p": "media/9c3d29257567f6ed.jpg",
+     "d": 12.0
+    },
+    {
+     "v": "media/a6d56526e7531f50.mp4",
+     "p": "media/a6d56526e7531f50.jpg",
+     "d": 10.72
+    },
+    {
+     "v": "media/b1a8b904cbadec5d.mp4",
+     "p": "media/b1a8b904cbadec5d.jpg",
+     "d": 10.72
+    }
+   ]
+  },
+  {
+   "id": "p61206302a4",
+   "story": "example3_s2",
+   "videos": [
+    {
+     "v": "media/82d40be2b3b84693.mp4",
+     "p": "media/82d40be2b3b84693.jpg",
+     "d": 12.0
+    },
+    {
+     "v": "media/c90b6195e5ff90b1.mp4",
+     "p": "media/c90b6195e5ff90b1.jpg",
+     "d": 10.72
+    },
+    {
+     "v": "media/10220e397e7842ed.mp4",
+     "p": "media/10220e397e7842ed.jpg",
+     "d": 10.72
+    }
+   ]
+  },
+  {
+   "id": "pbe202ce532",
+   "story": "example3_s3",
+   "videos": [
+    {
+     "v": "media/73f7a913956830b7.mp4",
+     "p": "media/73f7a913956830b7.jpg",
+     "d": 11.2
+    },
+    {
+     "v": "media/d043a3a5e6d60d1b.mp4",
+     "p": "media/d043a3a5e6d60d1b.jpg",
+     "d": 10.72
+    },
+    {
+     "v": "media/9f554e2c172f693e.mp4",
+     "p": "media/9f554e2c172f693e.jpg",
+     "d": 10.72
+    }
+   ]
   }
  ],
- "catches": [
-  {
-   "id": "p1c2918f93b",
-   "story": "example2",
-   "a": {
-    "v": "media/f4e094259e35ce25.mp4",
-    "p": "media/f4e094259e35ce25.jpg"
-   },
-   "b": {
-    "v": "media/384b5f6a876e65e2.mp4",
-    "p": "media/384b5f6a876e65e2.jpg"
-   }
-  },
-  {
-   "id": "p7b805be9d1",
-   "story": "example1",
-   "a": {
-    "v": "media/ce75649d55058bd3.mp4",
-    "p": "media/ce75649d55058bd3.jpg"
-   },
-   "b": {
-    "v": "media/b1c872a960cecfdb.mp4",
-    "p": "media/b1c872a960cecfdb.jpg"
-   }
-  },
-  {
-   "id": "p7c38beeec6",
-   "story": "example3",
-   "a": {
-    "v": "media/373c1c748c26e672.mp4",
-    "p": "media/373c1c748c26e672.jpg"
-   },
-   "b": {
-    "v": "media/e5eb374a550f6a6f.mp4",
-    "p": "media/e5eb374a550f6a6f.jpg"
-   }
-  }
- ]
+ "catches": []
 }

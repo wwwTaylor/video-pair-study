@@ -1,12 +1,16 @@
-/* Static (GitHub Pages) version of the pairwise video questionnaire.
- * The browser picks the pairs for each person and sends every answer to Supabase.
+/* Static (GitHub Pages) version of the video questionnaire.
+ * Two formats: "pair" (two videos, choose A / same / B per question) and
+ * "rank" (several videos, rank them per question).
+ * The browser picks the items for each person and sends every answer to Supabase.
  * Answers that cannot be sent right away are kept in this browser and retried. */
 (function () {
   'use strict';
 
+  var LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
   var $ = function (id) { return document.getElementById(id); };
   var S = null;            // study.json
-  var pairById = {};
+  var itemById = {};
+  var nVideos = 2;         // videos per item
   var memQueue = null;     // answers waiting for upload; the single source of truth (mirrored to localStorage)
   var flushPromise = null; // the upload loop in progress, shared by every caller
   var state = {
@@ -17,7 +21,8 @@
     remainingNew: 0,
     offset: 0,
     trialStart: 0,
-    watch: { l: 0, r: 0 },
+    watch: [],
+    rank: {},              // rank format: question id -> video indices, best first
     gen: 0,
     dirty: false
   };
@@ -175,18 +180,66 @@
     $('pilotBanner').hidden = !S.pilot;
   }
 
+  // ------------------------------------------------------------------ questions
   function renderQuestions() {
     var form = $('questions');
     form.textContent = '';
+    var hint = $('rankHint');
+    hint.hidden = S.format !== 'rank';
+    hint.textContent = S.format === 'rank' ? (txt(S.rank_hint) || '每个问题：按从好到差的顺序依次点击。') : '';
     S.criteria.forEach(function (c, i) {
       var q = el('p', { class: 'qtext' }, [(i + 1) + '. ' + txt(c.question)]);
-      var choices = el('div', { class: 'choices', role: 'radiogroup', 'aria-label': txt(c.question) });
-      ['left', 'tie', 'right'].forEach(function (value) {
-        var input = el('input', { type: 'radio', name: c.id, value: value });
-        input.addEventListener('change', function () { state.dirty = true; updateSubmit(); });
-        choices.appendChild(el('label', { class: 'choice' }, [input, el('span', { text: txt(S.options[value]) })]));
-      });
-      form.appendChild(el('fieldset', { class: 'question' }, [q, choices]));
+      if (S.format === 'rank') {
+        var row = el('div', { class: 'rank-row', role: 'group', 'aria-label': txt(c.question) });
+        for (var v = 0; v < nVideos; v++) {
+          var btn = el('button', { type: 'button', class: 'rank-btn', 'data-crit': c.id, 'data-v': String(v) },
+            [el('span', { class: 'letter', text: LETTERS[v] }), el('span', { class: 'badge' })]);
+          btn.addEventListener('click', onRankTap);
+          row.appendChild(btn);
+        }
+        form.appendChild(el('fieldset', { class: 'question rank' }, [q, row]));
+      } else {
+        var choices = el('div', { class: 'choices', role: 'radiogroup', 'aria-label': txt(c.question) });
+        ['left', 'tie', 'right'].forEach(function (value) {
+          var input = el('input', { type: 'radio', name: c.id, value: value });
+          input.addEventListener('change', function () { state.dirty = true; updateSubmit(); });
+          choices.appendChild(el('label', { class: 'choice' }, [input, el('span', { text: txt(S.options[value]) })]));
+        });
+        form.appendChild(el('fieldset', { class: 'question' }, [q, choices]));
+      }
+    });
+  }
+
+  // Rank format: tap the videos from best to worst. Tapping a video that already has a
+  // place removes it and everything ranked after it, so a choice can be redone.
+  function onRankTap(e) {
+    var btn = e.currentTarget;
+    var crit = btn.getAttribute('data-crit');
+    var v = parseInt(btn.getAttribute('data-v'), 10);
+    var order = (state.rank[crit] || []).slice();
+    var at = order.indexOf(v);
+    if (at >= 0) {
+      order = order.slice(0, at);
+    } else {
+      order.push(v);
+      if (order.length === nVideos - 1) {            // the last place is implied
+        for (var i = 0; i < nVideos; i++) if (order.indexOf(i) < 0) order.push(i);
+      }
+    }
+    state.rank[crit] = order;
+    state.dirty = true;
+    paintRank(crit);
+    updateSubmit();
+  }
+
+  function paintRank(crit) {
+    var order = state.rank[crit] || [];
+    Array.prototype.forEach.call($('questions').querySelectorAll('.rank-btn[data-crit="' + crit + '"]'), function (btn) {
+      var v = parseInt(btn.getAttribute('data-v'), 10);
+      var place = order.indexOf(v);
+      btn.className = 'rank-btn' + (place >= 0 ? ' ranked r' + (place + 1) : '');
+      btn.querySelector('.badge').textContent = place >= 0 ? '第 ' + (place + 1) : '';
+      btn.setAttribute('aria-label', LETTERS[v] + (place >= 0 ? '，第 ' + (place + 1) + ' 名' : '，未排名'));
     });
   }
 
@@ -206,7 +259,7 @@
   // ------------------------------------------------------------------ batches
   function newBatch() {
     var done = doneMap();
-    var ids = S.pairs.map(function (p) { return p.id; });
+    var ids = S.items.map(function (p) { return p.id; });
     var fixed = S.item_order === 'fixed';   // fixed: always the order listed in study.json
     var order = fixed ? ids : shuffled(ids, seeded(hashStr(state.annotator + '|order|' + S.study_id)));
     var fresh = order.filter(function (id) { return !done[id]; });
@@ -226,18 +279,22 @@
     state.offset = fixed ? ids.length - candidates.length : 0;   // items of this round answered earlier
     state.sessionId = randomId();
     var rnd = seeded(hashStr(state.sessionId));
+    function arranged(videos) {      // fixed_order: keep the positions built into study.json
+      if (S.fixed_order) return videos.slice();
+      if (videos.length === 2) return rnd() < 0.5 ? [videos[1], videos[0]] : videos.slice();
+      return shuffled(videos, rnd);
+    }
     var trials = chosen.map(function (id) {
-      var p = pairById[id];
-      var flip = S.fixed_order ? false : rnd() < 0.5;   // fixed_order: keep the built A/B order
-      return { item: id, kind: 'pair', story: p.story, left: flip ? p.b : p.a, right: flip ? p.a : p.b, round: round };
+      var it = itemById[id];
+      return { item: id, kind: 'pair', story: it.story, videos: arranged(it.videos), round: round };
     });
     var checks = [];
     for (var c = 0; c < S.catch_per_batch && S.catches.length && trials.length; c++) {
       var k = S.catches[Math.floor(rnd() * S.catches.length)];
-      var f = rnd() < 0.5;
-      checks.push({ item: k.id, kind: 'catch', story: k.story, left: f ? k.b : k.a, right: f ? k.a : k.b, round: round });
+      checks.push({ item: k.id, kind: 'catch', story: k.story,
+        videos: rnd() < 0.5 ? [k.videos[1], k.videos[0]] : k.videos.slice(), round: round });
     }
-    if (fixed) {             // keep the pair order; a check goes to a random place after the first item
+    if (fixed) {             // keep the item order; a check goes to a random place after the first item
       checks.forEach(function (check) { trials.splice(1 + Math.floor(rnd() * trials.length), 0, check); });
     } else {
       trials = shuffled(trials.concat(checks), rnd);
@@ -268,24 +325,32 @@
     $('storyText').textContent = txt(story.text);
     $('storyText').hidden = !txt(story.text);
     Array.prototype.forEach.call($('questions').querySelectorAll('input[type=radio]'), function (r) { r.checked = false; });
+    state.rank = {};
+    S.criteria.forEach(function (c) { if (S.format === 'rank') paintRank(c.id); });
     state.dirty = false;
-    state.watch = { l: 0, r: 0 };
     state.gen += 1;
-    mountVideo('L', trial.left, 'l');
-    mountVideo('R', trial.right, 'r');
+    state.watch = trial.videos.map(function () { return 0; });
+    var box = $('videos');
+    box.textContent = '';
+    box.className = 'videos n' + trial.videos.length;
+    trial.videos.forEach(function (info, i) {
+      var slot = el('div', { class: 'video-slot' });
+      box.appendChild(el('figure', { class: 'video-card' },
+        [el('figcaption', {}, [el('span', { class: 'tag', text: LETTERS[i] })]), slot]));
+      mountVideo(slot, info, i);
+    });
     state.trialStart = Date.now();
     updateSubmit();
     window.scrollTo(0, 0);
   }
 
-  function mountVideo(slotKey, info, side) {
-    var slot = $('slot' + slotKey);
-    slot.textContent = '';
+  function mountVideo(slot, info, index) {
     var v = document.createElement('video');
     v.controls = true;
     v.preload = 'auto';
     v.muted = true;
     v.autoplay = true;               // starts by itself (muted videos may autoplay)
+    v.loop = false;
     v.playsInline = true;
     v.setAttribute('playsinline', '');
     v.setAttribute('controlslist', 'nodownload noremoteplayback');
@@ -294,13 +359,13 @@
     v.src = info.v;
     v.addEventListener('contextmenu', function (e) { e.preventDefault(); });
     slot.appendChild(v);
-    trackWatch(v, side);
+    trackWatch(v, index);
     var p = v.play();
     if (p && p.catch) p.catch(function () { /* the user can press play */ });
   }
 
   // Records (without enforcing anything) how much of each video was played.
-  function trackWatch(video, side) {
+  function trackWatch(video, index) {
     var STEP = 0.5, buckets = null, last = null, gen = state.gen;
     function ensure() {
       if (!buckets && isFinite(video.duration) && video.duration > 0) {
@@ -315,7 +380,7 @@
       for (var i = a; i <= b; i++) buckets[i] = 1;
       var sum = 0;
       for (var j = 0; j < buckets.length; j++) sum += buckets[j];
-      state.watch[side] = sum / buckets.length;
+      state.watch[index] = sum / buckets.length;
     }
     video.addEventListener('play', function () { last = video.currentTime; });
     video.addEventListener('seeked', function () { last = video.currentTime; });
@@ -329,18 +394,19 @@
     });
   }
 
-  function playBoth() {
-    var vids = [$('slotL').querySelector('video'), $('slotR').querySelector('video')];
-    vids.forEach(function (v) { if (v) { v.pause(); v.currentTime = 0; } });
+  function allVideos() { return Array.prototype.slice.call(document.querySelectorAll('.video-slot video')); }
+
+  function playAll() {
+    var vids = allVideos();
+    vids.forEach(function (v) { v.pause(); v.currentTime = 0; });
     vids.forEach(function (v) {
-      if (!v) return;
       var p = v.play();
       if (p && p.catch) p.catch(function () { /* ignore */ });
     });
   }
 
   function stopVideos() {
-    Array.prototype.forEach.call(document.querySelectorAll('.video-slot video'), function (v) {
+    allVideos().forEach(function (v) {
       v.pause();
       v.removeAttribute('src');
       v.load();
@@ -348,10 +414,20 @@
   }
 
   function collectAnswers() {
+    var trial = state.trials[state.index];
     var values = {}, missing = 0;
     S.criteria.forEach(function (c) {
-      var checked = $('questions').querySelector('input[name="' + c.id + '"]:checked');
-      if (checked) values[c.id] = checked.value; else missing += 1;
+      if (S.format === 'rank') {
+        var order = state.rank[c.id] || [];
+        if (order.length === trial.videos.length) {
+          values[c.id] = order.map(function (i) { return mediaName(trial.videos[i].v); });   // best first
+        } else {
+          missing += 1;
+        }
+      } else {
+        var checked = $('questions').querySelector('input[name="' + c.id + '"]:checked');
+        if (checked) values[c.id] = checked.value; else missing += 1;
+      }
     });
     return { values: values, missing: missing };
   }
@@ -360,10 +436,16 @@
     $('submitBtn').disabled = collectAnswers().missing > 0;
   }
 
+  function round3(x) { return Math.round((x || 0) * 1000) / 1000; }
+
   function submit() {
     var answers = collectAnswers();
     if (answers.missing) return;
     var trial = state.trials[state.index];
+    var names = trial.videos.map(function (info) { return mediaName(info.v); });
+    var watch = state.watch.map(round3);
+    var values = answers.values;
+    if (S.format === 'rank') values._watch = watch;      // "_" fields are not questions
     enqueue({
       rid: randomId(),
       study_id: S.study_id,
@@ -372,11 +454,13 @@
       item_id: trial.item,
       kind: trial.kind,
       story_id: trial.story,
-      left_media: mediaName(trial.left.v),
-      right_media: mediaName(trial.right.v),
-      answers: answers.values,
-      left_watch: Math.round(state.watch.l * 1000) / 1000,
-      right_watch: Math.round(state.watch.r * 1000) / 1000,
+      left_media: names[0],                              // video A
+      // video B (and C, ...) in the order shown; the table allows 64 characters here, and the
+      // complete ranking is in `answers` anyway
+      right_media: names.slice(1).join(',').slice(0, 64),
+      answers: values,
+      left_watch: watch[0],
+      right_watch: Math.min.apply(null, watch.slice(1)),
       duration_ms: Date.now() - state.trialStart,
       round: trial.round,
       position: state.index,
@@ -418,7 +502,8 @@
       message('页面加载失败', e.message);
       return;
     }
-    S.pairs.forEach(function (p) { pairById[p.id] = p; });
+    S.items.forEach(function (p) { itemById[p.id] = p; });
+    nVideos = S.items.length ? S.items[0].videos.length : 2;
     renderWelcome();
     renderQuestions();
     updateSyncBanner();
@@ -429,7 +514,7 @@
     $('annotatorId').value = params.get('annotator') || lsGet('vps_annotator') || '';
     $('startBtn').addEventListener('click', start);
     $('annotatorId').addEventListener('keydown', function (e) { if (e.key === 'Enter') start(); });
-    $('playBoth').addEventListener('click', playBoth);
+    $('playBoth').addEventListener('click', playAll);
     $('submitBtn').addEventListener('click', submit);
     $('syncRetry').addEventListener('click', function () { flush(); });
     $('continueBtn').addEventListener('click', newBatch);

@@ -6,7 +6,7 @@
   <meta name="robots" content="noindex, nofollow">
   <meta name="referrer" content="no-referrer">
   <title>视频对比问卷</title>
-  <link rel="stylesheet" href="style.css?v=3ed76305">
+  <link rel="stylesheet" href="style.css?v=bb393cd7">
 </head>
 <body>
   <header class="topbar">
@@ -49,19 +49,11 @@
         <p class="story-text" id="storyText"></p>
       </div>
 
-      <div class="videos">
-        <figure class="video-card">
-          <figcaption><span class="tag">A</span></figcaption>
-          <div class="video-slot" id="slotL"></div>
-        </figure>
-        <figure class="video-card">
-          <figcaption><span class="tag">B</span></figcaption>
-          <div class="video-slot" id="slotR"></div>
-        </figure>
-      </div>
+      <div class="videos" id="videos"></div>
 
       <div class="toolbar">
         <button class="btn secondary" id="playBoth" type="button">▶ 重播</button>
+        <span class="hint" id="rankHint" hidden></span>
       </div>
 
       <form class="questions compact" id="questions" onsubmit="return false"></form>
@@ -92,6 +84,6 @@
     </section>
   </main>
 
-  <script src="app.js?v=3ed76305"></script>
+  <script src="app.js?v=bb393cd7"></script>
 </body>
 </html>
